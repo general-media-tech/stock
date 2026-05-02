@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GMT Systems — إعلان النسخة v1.2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #D5001C;
+  --red-dark: #A80017;
+  --bg: #0A0A0A;
+  --surface: #141414;
+  --surface2: #1E1E1E;
+  --border: #2A2A2A;
+  --text: #F5F5F5;
+  --text2: #A0A0A0;
+  --gold: #F59E0B;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Cairo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── Animated bg ─── */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(213,0,28,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(213,0,28,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+.bg-glow {
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(213,0,28,0.12) 0%, transparent 70%);
+  top: -200px; left: 50%; transform: translateX(-50%);
+  pointer-events: none; z-index: 0;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+.content { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
+
+/* ─── Hero ─── */
+.hero { text-align: center; padding: 60px 0 50px; }
+
+.version-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(213,0,28,0.15);
+  border: 1px solid rgba(213,0,28,0.4);
+  border-radius: 30px; padding: 8px 20px;
+  font-size: 13px; font-weight: 800; color: var(--red);
+  margin-bottom: 24px;
+  animation: fadeInDown 0.6s ease both;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-logo {
+  width: 90px; height: 90px;
+  background: white;
+  border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 60px rgba(213,0,28,0.4);
+  overflow: hidden;
+  animation: fadeInDown 0.6s ease 0.1s both;
+}
+
+.hero-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+.hero h1 {
+  font-size: 38px; font-weight: 900; line-height: 1.2;
+  animation: fadeInDown 0.6s ease 0.2s both;
+}
+
+.hero h1 span { color: var(--red); }
+
+.hero-sub {
+  font-size: 15px; color: var(--text2); margin-top: 12px; line-height: 1.7;
+  animation: fadeInDown 0.6s ease 0.3s both;
+  max-width: 480px; margin-left: auto; margin-right: auto;
+}
+
+/* ─── System description card ─── */
+.desc-card {
+  background: linear-gradient(135deg, var(--surface), #1a0005);
+  border: 1px solid rgba(213,0,28,0.25);
+  border-radius: 20px;
+  padding: 28px 24px;
+  margin-bottom: 32px;
+  animation: fadeInDown 0.6s ease 0.4s both;
+}
+
+.desc-card h2 {
+  font-size: 16px; font-weight: 900;
+  color: var(--red); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.desc-text {
+  font-size: 14px; line-height: 2; color: #D0D0D0;
+}
+
+.desc-text strong { color: white; }
+
+.desc-pillars {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-top: 18px;
+}
+
+.pillar {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 14px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+
+.pillar-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.pillar-title { font-size: 13px; font-weight: 800; color: white; margin-bottom: 3px; }
+.pillar-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* ─── Changelog ─── */
+.changelog-title {
+  font-size: 13px; font-weight: 800; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.changelog-title::before, .changelog-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+.change-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 14px;
+  animation: fadeInUp 0.5s ease both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.change-item:nth-child(1) { animation-delay: 0.5s; }
+.change-item:nth-child(2) { animation-delay: 0.6s; }
+.change-item:nth-child(3) { animation-delay: 0.7s; }
+.change-item:nth-child(4) { animation-delay: 0.8s; }
+.change-item:nth-child(5) { animation-delay: 0.9s; }
+.change-item:nth-child(6) { animation-delay: 1.0s; }
+
+.change-badge {
+  font-size: 10px; font-weight: 900; padding: 3px 10px;
+  border-radius: 20px; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+}
+.badge-fix    { background: rgba(220,38,38,0.2); color: #F87171; border: 1px solid rgba(220,38,38,0.3); }
+.badge-nav    { background: rgba(37,99,235,0.2); color: #60A5FA; border: 1px solid rgba(37,99,235,0.3); }
+.badge-new    { background: rgba(22,163,74,0.2); color: #4ADE80; border: 1px solid rgba(22,163,74,0.3); }
+.badge-docs   { background: rgba(245,158,11,0.2); color: #FCD34D; border: 1px solid rgba(245,158,11,0.3); }
+
+.change-body { flex: 1; }
+.change-title { font-size: 14px; font-weight: 800; color: white; margin-bottom: 4px; }
+.change-desc  { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.change-file  { font-size: 11px; color: #555; margin-top: 6px; font-family: monospace; }
+
+/* ─── Files grid ─── */
+.files-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 32px;
+}
+
+.file-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+
+.file-card-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(213,0,28,0.15); border: 1px solid rgba(213,0,28,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+
+.file-card-name { font-size: 12px; font-weight: 800; color: white; margin-bottom: 2px; }
+.file-card-desc { font-size: 11px; color: var(--text2); }
+
+/* ─── Footer ─── */
+.page-footer {
+  text-align: center; padding: 32px 20px;
+  border-top: 1px solid var(--border); margin-top: 48px;
+}
+
+.page-footer .logo-small {
+  width: 48px; height: 48px; background: white; border-radius: 12px;
+  overflow: hidden; margin: 0 auto 12px;
+}
+
+.page-footer .logo-small img { width: 100%; height: 100%; object-fit: contain; }
+
+.page-footer p { font-size: 13px; color: var(--text2); line-height: 1.8; }
+.page-footer strong { color: white; }
+.v-tag { color: var(--red); font-weight: 900; }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div class="content">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="version-badge">🚀 إصدار جديد</div>
+    <div class="hero-logo">
+      <img src="logo.jpg" alt="GMT" onerror="this.outerHTML='<span style=\'color:var(--red);font-weight:900;font-size:22px;\'>GMT</span>'">
+    </div>
+    <h1>GMT Systems <span>v1.2</span></h1>
+    <p class="hero-sub">
+      تحديث شامل يُصلح أخطاء حرجة، يُضيف تنقلاً أسهل بين الأقسام،<br>
+      ويوثّق ملف طباعة الملصقات لأول مرة
+    </p>
+  </div>
+
+  <!-- System Description -->
+  <div class="desc-card">
+    <h2>💡 ما الذي يفعله هذا النظام؟</h2>
+    <p class="desc-text">
+      <strong>GMT Systems</strong> هو نظام إدارة متكامل مصمم خصيصاً لشركة <strong>General Media Tech</strong> — الوكيل المعتمد لـ Canon في سوريا.
+      يعمل النظام بالكامل من المتصفح مباشرةً، دون الحاجة لتثبيت أي برنامج، ويتصل بقاعدة بيانات سحابية آمنة لحفظ جميع البيانات في الوقت الفعلي عبر <strong>6 فروع</strong>.
+    </p>
+    <div class="desc-pillars">
+      <div class="pillar">
+        <div class="pillar-icon">📦</div>
+        <div>
+          <div class="pillar-title">المخزون</div>
+          <div class="pillar-desc">تتبع كميات كل منتج في كل فرع، ونقل المخزون بين الفروع بضغطة</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🏪</div>
+        <div>
+          <div class="pillar-title">نقطة البيع</div>
+          <div class="pillar-desc">تسجيل المبيعات بمسح الباركود، وإصدار الفاتورة، وخصم الكميات تلقائياً</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">📊</div>
+        <div>
+          <div class="pillar-title">التقارير</div>
+          <div class="pillar-desc">إحصاءات يومية وشهرية لمبيعات الفروع وهامش الربح وأداء المنتجات</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-icon">🏷️</div>
+        <div>
+          <div class="pillar-title">الملصقات</div>
+          <div class="pillar-desc">طباعة ملصقات QR + باركود لكل منتج في كل فرع بتصدير PDF مباشر</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Changelog -->
+  <div class="changelog-title">ما الجديد في v1.2</div>
+
+  <div class="change-item">
+    <span class="change-badge badge-fix">🔴 إصلاح حرج</span>
+    <div class="change-body">
+      <div class="change-title">دقة تقارير الربح — حفظ سعر الكلفة مع كل فاتورة</div>
+      <div class="change-desc">كانت بنود الفاتورة لا تحفظ سعر الكلفة، مما يجعل أرقام هامش الربح في التقارير غير دقيقة إذا تغيّر السعر لاحقاً. الآن يُحفظ سعر الكلفة لحظة البيع في كل فاتورة.</div>
+      <div class="change-file">gmt_branch.html → itemsPayload → cost_price: Number(c.p.cost_price) || 0</div>
+    </div>
+  </div>
+
+  <div class="change-item">
+    <span class="change-badge badge-fix">🔴 إصلاح حرج</span>
+    <div class="change-body">
+      <div class="change-title">تصحيح فلتر الفروع في طباعة الملصقات</div>
+      <div class="change-desc">كانت قائمة الفروع تُفلتَر بشرط خاطئ مما قد يُخفي بعض الفروع. تم توحيد الفلتر مع بقية النظام باستخدام <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:3px;">is_branch=eq.true</code>.</div>
+      <div class="change-file">gmt_label_printer.html → fetchColumns() → filter fix</div>
+    </div>
+  </div>
+
+  <div class="change-item">
+    <span class="change-badge badge-nav">⚡ تحسين تنقل</span>
+    <div class="change-body">
+      <div class="change-title">زر الرئيسية في نقطة البيع والتقارير</div>
+      <div class="change-desc">أُضيف زر "🏠 الرئيسية" في header كل من نقطة البيع وصفحة التقارير للتنقل السريع بين الأقسام دون الحاجة لزر المتصفح.</div>
+      <div class="change-file">gmt_branch.html + gmt_reports.html → header buttons</div>
+    </div>
+  </div>
+
+  <div class="change-item">
+    <span class="change-badge badge-nav">⚡ تحسين تنقل</span>
+    <div class="change-body">
+      <div class="change-title">رابط طباعة الملصقات من داخل المخزون</div>
+      <div class="change-desc">أُضيف زر "طباعة ملصقات" في قائمة "المزيد" داخل صفحة المخزون، للانتقال المباشر لملف الطباعة بعد تحديث الكميات.</div>
+      <div class="change-file">inv_mobile.html → more-sheet → gmt_label_printer.html</div>
+    </div>
+  </div>
+
+  <div class="change-item">
+    <span class="change-badge badge-new">✅ جديد</span>
+    <div class="change-body">
+      <div class="change-title">فوتر موحّد مع رقم الإصدار في جميع الملفات</div>
+      <div class="change-desc">أُضيف فوتر ثابت في أسفل كل صفحة يعرض رقم الإصدار الحالي واسم القسم وشركة GMT، ليكون المستخدم دائماً على علم بالنسخة المثبتة.</div>
+      <div class="change-file">index.html + gmt_branch.html + gmt_reports.html + inv_mobile.html + gmt_label_printer.html</div>
+    </div>
+  </div>
+
+  <div class="change-item">
+    <span class="change-badge badge-docs">📋 توثيق</span>
+    <div class="change-body">
+      <div class="change-title">توثيق ملف طباعة الملصقات في ملف التوثيق</div>
+      <div class="change-desc">أُضيف قسم كامل لـ gmt_label_printer.html في ملف التوثيق يشرح طريقة الاستخدام، مواصفات الملصق، وتفاصيل تقنية للمطورين.</div>
+      <div class="change-file">GMT_Project_Documentation.html → القسم ٦ — طباعة الملصقات</div>
+    </div>
+  </div>
+
+  <!-- Files -->
+  <div class="changelog-title" style="margin-top:32px;">ملفات النظام بعد التحديث</div>
+  <div class="files-grid">
+    <div class="file-card">
+      <div class="file-card-icon">🏠</div>
+      <div>
+        <div class="file-card-name">index.html</div>
+        <div class="file-card-desc">الصفحة الرئيسية — 4 أقسام</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-card-icon">📦</div>
+      <div>
+        <div class="file-card-name">inv_mobile.html</div>
+        <div class="file-card-desc">الجرد والمخزون</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-card-icon">🏪</div>
+      <div>
+        <div class="file-card-name">gmt_branch.html</div>
+        <div class="file-card-desc">نقطة البيع — الفروع</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-card-icon">📊</div>
+      <div>
+        <div class="file-card-name">gmt_reports.html</div>
+        <div class="file-card-desc">تقارير المبيعات</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-card-icon">🏷️</div>
+      <div>
+        <div class="file-card-name">gmt_label_printer.html</div>
+        <div class="file-card-desc">طباعة الملصقات</div>
+      </div>
+    </div>
+    <div class="file-card">
+      <div class="file-card-icon">📋</div>
+      <div>
+        <div class="file-card-name">GMT_Project_Documentation.html</div>
+        <div class="file-card-desc">التوثيق الكامل</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="page-footer">
+    <div class="logo-small">
+      <img src="logo.jpg" alt="GMT" onerror="this.outerHTML='<span style=\'color:#D5001C;font-weight:900;font-size:14px;padding:4px;\'>GMT</span>'">
+    </div>
+    <p>
+      <strong>GMT Systems</strong> <span class="v-tag">v1.2</span><br>
+      General Media Tech · Canon Authorized Dealer<br>
+      <span style="font-size:12px;">نظام إدارة المخزون والمبيعات — 6 فروع في سوريا</span>
+    </p>
+  </div>
+
+</div>
+
+<script>
+// Animate items on scroll
+const items = document.querySelectorAll('.change-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.style.opacity = '1'; });
+}, { threshold: 0.1 });
+items.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
