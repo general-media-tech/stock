@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>GMT — لوحة الإدارة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D5001C;--red-dark:#A80017;--red-light:#FFF0F2;--red-mid:#FFD6DA;
+  --bg:#F0F2F8;--surface:#FFFFFF;--surface2:#F5F6FA;--surface3:#ECEEF5;
+  --border:#E5E7EB;--text:#111111;--text2:#4B5563;--text3:#9CA3AF;
+  --success:#16a34a;--success-bg:#dcfce7;
+  --warning:#d97706;--warning-bg:#fef3c7;
+  --danger:#dc2626;--danger-bg:#fee2e2;
+  --blue:#1D4ED8;--blue-bg:#EFF6FF;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;
+  --shadow:0 2px 16px rgba(0,0,0,0.08);
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#111827 0%,#1f2937 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+.login-card{background:white;border-radius:20px;padding:32px 28px;width:100%;max-width:360px;box-shadow:0 24px 64px rgba(0,0,0,0.4);}
+.login-logo{width:56px;height:56px;background:var(--red);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;overflow:hidden;}
+.login-logo img{width:100%;height:100%;object-fit:contain;}
+.login-title{text-align:center;font-size:20px;font-weight:900;margin-bottom:4px;}
+.login-sub{text-align:center;font-size:12px;color:var(--text3);font-weight:600;margin-bottom:24px;}
+.login-input{width:100%;background:var(--surface2);border:2px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;color:var(--text);outline:none;text-align:center;letter-spacing:3px;margin-bottom:14px;transition:border-color 0.2s;}
+.login-input:focus{border-color:var(--red);}
+.login-btn{width:100%;background:var(--red);color:white;border:none;border-radius:12px;padding:13px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:background 0.15s;}
+.login-btn:hover{background:var(--red-dark);}
+.login-err{color:var(--danger);font-size:12px;font-weight:700;text-align:center;margin-top:8px;display:none;}
+
+/* TOPBAR */
+#topbar{background:#111827;padding:0 16px;height:58px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.tb-logo{width:36px;height:36px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.tb-logo img{width:100%;height:100%;object-fit:contain;}
+.tb-title{font-size:14px;font-weight:800;color:white;flex:1;}
+.tb-badge{background:rgba(213,0,28,0.25);border:1px solid rgba(213,0,28,0.4);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:800;color:#fca5a5;}
+.tb-logout{background:none;border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 12px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);cursor:pointer;transition:all 0.15s;}
+.tb-logout:hover{background:rgba(255,255,255,0.1);color:white;}
+
+/* TABS */
+#main-tabs{display:flex;background:#1f2937;border-bottom:1px solid rgba(255,255,255,0.1);overflow-x:auto;scrollbar-width:none;}
+#main-tabs::-webkit-scrollbar{display:none;}
+.main-tab{padding:12px 16px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:800;border:none;background:none;cursor:pointer;color:rgba(255,255,255,0.5);border-bottom:3px solid transparent;white-space:nowrap;transition:all 0.15s;}
+.main-tab.active{color:white;border-bottom-color:var(--red);}
+
+/* CONTENT */
+#app-content{padding:16px;max-width:900px;margin:0 auto;padding-bottom:40px;}
+
+/* OVERVIEW CARDS */
+.overview-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+.ov-card{background:var(--surface);border-radius:var(--radius);border:1.5px solid var(--border);padding:14px;box-shadow:var(--shadow);}
+.ov-card .val{font-size:22px;font-weight:900;line-height:1.1;}
+.ov-card .lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:4px;}
+.ov-card .sub{font-size:11px;font-weight:600;color:var(--text3);margin-top:2px;}
+.ov-card.red{border-color:var(--red);}   .ov-card.red .val{color:var(--red);}
+.ov-card.warn{border-color:var(--warning);}.ov-card.warn .val{color:var(--warning);}
+.ov-card.ok{border-color:var(--success);} .ov-card.ok .val{color:var(--success);}
+.ov-card.purple{border-color:var(--purple);}.ov-card.purple .val{color:var(--purple);}
+
+/* BRANCH SELECTOR */
+.branch-selector{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:14px;padding-bottom:2px;}
+.branch-selector::-webkit-scrollbar{display:none;}
+.branch-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:800;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
+.branch-chip.active{background:var(--red);border-color:var(--red);color:white;}
+
+/* SECTION HEADER */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sec-title{font-size:14px;font-weight:800;}
+.sec-sub{font-size:11px;color:var(--text3);font-weight:600;}
+
+/* INVOICE CARD */
+.inv-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;transition:border-color 0.15s;}
+.inv-card:hover{border-color:var(--red);}
+.inv-card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.inv-num{font-size:14px;font-weight:900;color:var(--red);font-family:monospace;}
+.inv-meta-row{font-size:11px;color:var(--text3);font-weight:600;margin-top:2px;}
+.inv-customer{font-size:12px;font-weight:700;margin-top:3px;}
+.inv-total{font-size:18px;font-weight:900;color:var(--success);}
+.inv-foot{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center;}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;}
+.badge-branch{background:var(--blue-bg);color:var(--blue);}
+.badge-comm{background:var(--purple-bg);color:var(--purple);}
+.badge-no-comm{background:var(--surface2);color:var(--text3);}
+.badge-transferred{background:var(--success-bg);color:var(--success);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;border:none;cursor:pointer;font-size:12px;font-weight:800;font-family:'Cairo',sans-serif;transition:all 0.12s;}
+.btn:active{transform:scale(0.97);}
+.btn-red{background:var(--red);color:white;box-shadow:0 2px 8px rgba(213,0,28,0.25);}
+.btn-red:hover{background:var(--red-dark);}
+.btn-ghost{background:var(--surface2);color:var(--text2);border:1.5px solid var(--border);}
+.btn-success{background:var(--success);color:white;}
+.btn-purple{background:var(--purple);color:white;}
+.btn-warning{background:var(--warning);color:white;}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:8px;}
+
+/* TRANSFER CARD */
+.transfer-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);}
+.transfer-head{display:flex;justify-content:space-between;align-items:flex-start;}
+.transfer-amount{font-size:18px;font-weight:900;color:var(--success);}
+.transfer-branch{font-size:12px;font-weight:700;color:var(--blue);}
+.transfer-date{font-size:11px;color:var(--text3);}
+
+/* COMMISSION FORM */
+.comm-form{background:var(--purple-bg);border:1.5px solid var(--purple);border-radius:12px;padding:14px;margin-top:10px;}
+.comm-form-title{font-size:12px;font-weight:800;color:var(--purple);margin-bottom:10px;}
+.comm-input{background:white;border:1.5px solid var(--purple);border-radius:9px;padding:8px 12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;color:var(--text);outline:none;width:100%;text-align:center;}
+.comm-input:focus{box-shadow:0 0 0 3px rgba(124,58,237,0.15);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:800;display:flex;align-items:flex-end;justify-content:center;}
+.modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:slideUp 0.25s ease;}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;}
+.modal-head{padding:14px 18px 12px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:16px;font-weight:900;}
+.modal-body{padding:16px 18px;}
+.modal-close{width:28px;height:28px;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+
+/* FORM */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:5px;display:block;}
+.form-input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;color:var(--text);outline:none;transition:border-color 0.15s;}
+.form-input:focus{border-color:var(--red);}
+.form-select{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;color:var(--text);outline:none;}
+
+/* INVOICE DETAIL */
+.item-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);}
+.item-row:last-child{border:none;}
+.item-name{flex:1;font-size:13px;font-weight:700;}
+.item-qty{font-size:12px;color:var(--text3);font-weight:600;}
+.item-price{font-size:13px;font-weight:900;color:var(--red);}
+
+/* LOADING / TOAST */
+#page-loader{position:fixed;inset:0;background:var(--bg);z-index:5000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.loader{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#toast-wrap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9000;display:flex;flex-direction:column;gap:6px;pointer-events:none;width:min(340px,90vw);}
+.toast{background:#111;color:white;border-radius:11px;padding:10px 15px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:toastIn 0.2s ease;}
+.toast.ok{background:var(--success);}
+.toast.err{background:var(--danger);}
+@keyframes toastIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.filter-input{flex:1;min-width:140px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;}
+.filter-input:focus{border-color:var(--red);}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);}
+.empty-state .ico{font-size:40px;margin-bottom:10px;}
+
+/* RESPONSIVE */
+@media(min-width:600px){.overview-grid{grid-template-columns:repeat(4,1fr);}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="logo.jpg" alt="GMT" onerror="this.outerHTML='<span style=\'color:white;font-weight:900;\'>GMT</span>'">
+    </div>
+    <div class="login-title">لوحة الإدارة</div>
+    <div class="login-sub">General Media Tech — Admin</div>
+    <input type="password" class="login-input" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="login-err">كلمة السر غير صحيحة</div>
+  </div>
+</div>
+
+<!-- PAGE LOADER -->
+<div id="page-loader" style="display:none;">
+  <div class="loader"></div>
+  <div style="font-size:13px;color:var(--text3);">جارٍ التحميل...</div>
+</div>
+
+<!-- TOPBAR -->
+<div id="topbar" style="display:none;">
+  <div class="tb-logo"><img src="logo.jpg" alt="GMT" onerror="this.outerHTML='<span style=\'color:white;font-weight:900;font-size:11px;\'>GMT</span>'"></div>
+  <div class="tb-title">لوحة الإدارة</div>
+  <div class="tb-badge">ADMIN</div>
+  <button class="tb-logout" onclick="doLogout()">خروج</button>
+</div>
+
+<!-- TABS -->
+<div id="main-tabs" style="display:none;">
+  <button class="main-tab active" onclick="switchTab('overview')">📊 نظرة عامة</button>
+  <button class="main-tab" onclick="switchTab('invoices')">🧾 الفواتير</button>
+  <button class="main-tab" onclick="switchTab('transfers')">💸 الترحيلات</button>
+  <button class="main-tab" onclick="switchTab('commissions')">⭐ العمولات</button>
+</div>
+
+<div id="app-content" style="display:none;"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" style="display:none;" onclick="if(event.target===this)closeModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title">—</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div id="toast-wrap"></div>
+
+<script>
+const SB_URL = 'https://ysawzwtmodkqqbqoiojj.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzYXd6d3Rtb2RrcXFicW9pb2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NjI0OTUsImV4cCI6MjA5MjAzODQ5NX0.g-dBDpHzMsP_0IQAKFxzWkKzc_I13bGUMeYNgcUmrKQ';
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let branches    = [];
+let activeBranch= 'all';
+let activeTab   = 'overview';
+let allInvoices = [];
+let allTransfers= [];
+let allComm     = [];
+
+// ══════════════════════════════════════════
+// API
+// ══════════════════════════════════════════
+async function sb(method, path, body=null, extraHeaders={}) {
+  const r = await fetch(SB_URL + path, {
+    method,
+    headers: {
+      apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+      ...extraHeaders
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const ct = r.headers.get('content-type') || '';
+  const data = ct.includes('json') ? await r.json() : {};
+  if (!r.ok) throw new Error(Array.isArray(data) ? 'Error' : (data?.message || 'HTTP ' + r.status));
+  return data;
+}
+
+// ══════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════
+async function doLogin() {
+  const pwd = document.getElementById('pwd-input').value.trim();
+  if (!pwd) return;
+  const btn = document.querySelector('.login-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  try {
+    const rows = await sb('GET', `/rest/v1/gmt_settings?key=eq.admin_password&select=value`);
+    const correct = rows?.[0]?.value;
+    if (pwd === correct) {
+      sessionStorage.setItem('gmt_admin_auth', '1');
+      document.getElementById('login-screen').style.display = 'none';
+      await bootApp();
+    } else {
+      document.getElementById('login-err').style.display = 'block';
+    }
+  } catch(e) { showToast('خطأ في الاتصال: ' + e.message, 'err'); }
+  btn.textContent = 'دخول'; btn.disabled = false;
+}
+
+function doLogout() {
+  sessionStorage.removeItem('gmt_admin_auth');
+  location.reload();
+}
+
+// ══════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════
+async function bootApp() {
+  document.getElementById('page-loader').style.display = 'flex';
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('main-tabs').style.display = 'flex';
+  document.getElementById('app-content').style.display = 'block';
+
+  try {
+    // Load branches
+    const cols = await sb('GET', '/rest/v1/inv_columns?is_branch=eq.true&order=sort_order.asc&select=key_name,display_name,icon');
+    branches = Array.isArray(cols) ? cols : [];
+
+    // Load all data
+    await Promise.all([loadInvoices(), loadTransfers(), loadCommissions()]);
+    switchTab('overview');
+  } catch(e) { showToast('خطأ: ' + e.message, 'err'); }
+  document.getElementById('page-loader').style.display = 'none';
+}
+
+async function loadInvoices() {
+  const rows = await sb('GET', '/rest/v1/invoices?order=created_at.desc&limit=500&select=id,inv_number,branch_key,branch_name,total,items_count,customer_name,customer_phone,created_at');
+  allInvoices = Array.isArray(rows) ? rows : [];
+}
+async function loadTransfers() {
+  const rows = await sb('GET', '/rest/v1/branch_transfers?order=created_at.desc&limit=500');
+  allTransfers = Array.isArray(rows) ? rows : [];
+}
+async function loadCommissions() {
+  const rows = await sb('GET', '/rest/v1/invoice_commissions?order=created_at.desc&limit=500');
+  allComm = Array.isArray(rows) ? rows : [];
+}
+
+// ══════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.main-tab').forEach((t,i) => {
+    const tabs = ['overview','invoices','transfers','commissions'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  const c = document.getElementById('app-content');
+  if (tab === 'overview')     renderOverview();
+  else if (tab === 'invoices')    renderInvoices();
+  else if (tab === 'transfers')   renderTransfers();
+  else if (tab === 'commissions') renderCommissions();
+}
+
+// ══════════════════════════════════════════
+// BRANCH FILTER
+// ══════════════════════════════════════════
+function branchFilterHtml() {
+  const all = [{key_name:'all', display_name:'الكل', icon:'🌐'}, ...branches];
+  return `<div class="branch-selector">
+    ${all.map(b => `
+      <button class="branch-chip ${activeBranch===b.key_name?'active':''}"
+        onclick="activeBranch='${b.key_name}';switchTab('${activeTab}')">
+        ${b.icon||'🏪'} ${escH(b.display_name)}
+      </button>`).join('')}
+  </div>`;
+}
+
+function filteredInvoices() {
+  return activeBranch === 'all' ? allInvoices : allInvoices.filter(i => i.branch_key === activeBranch);
+}
+function filteredTransfers() {
+  return activeBranch === 'all' ? allTransfers : allTransfers.filter(t => t.branch_key === activeBranch);
+}
+function filteredComm() {
+  return activeBranch === 'all' ? allComm : allComm.filter(c => c.branch_key === activeBranch);
+}
+
+// ══════════════════════════════════════════
+// OVERVIEW TAB
+// ══════════════════════════════════════════
+function renderOverview() {
+  const invs  = filteredInvoices();
+  const trans = filteredTransfers();
+  const comms = filteredComm();
+
+  const totalSales    = invs.reduce((s,i) => s+(Number(i.total)||0), 0);
+  const totalTransf   = trans.reduce((s,t) => s+(Number(t.amount)||0), 0);
+  const pending       = Math.max(0, totalSales - totalTransf);
+  const totalComm     = comms.filter(c=>!c.paid).reduce((s,c)=>s+(Number(c.amount)||0), 0);
+
+  // Per-branch breakdown
+  const branchRows = branches.map(b => {
+    const bInvs  = allInvoices.filter(i=>i.branch_key===b.key_name);
+    const bTrans = allTransfers.filter(t=>t.branch_key===b.key_name);
+    const bComm  = allComm.filter(c=>c.branch_key===b.key_name&&!c.paid);
+    const bSales = bInvs.reduce((s,i)=>s+(Number(i.total)||0),0);
+    const bTr    = bTrans.reduce((s,t)=>s+(Number(t.amount)||0),0);
+    const bPend  = Math.max(0, bSales - bTr);
+    const bCom   = bComm.reduce((s,c)=>s+(Number(c.amount)||0),0);
+    if (bSales === 0 && bPend === 0) return '';
+    return `<div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr 80px 80px 80px;gap:8px;align-items:center;margin-bottom:8px;">
+      <div style="font-size:13px;font-weight:800;">${b.icon||'🏪'} ${escH(b.display_name)}</div>
+      <div style="text-align:center;"><div style="font-size:13px;font-weight:900;color:var(--red);">${bSales.toFixed(0)}$</div><div style="font-size:9px;color:var(--text3);">مبيعات</div></div>
+      <div style="text-align:center;"><div style="font-size:13px;font-weight:900;color:var(--warning);">${bPend.toFixed(0)}$</div><div style="font-size:9px;color:var(--text3);">غير مرحّل</div></div>
+      <div style="text-align:center;"><div style="font-size:13px;font-weight:900;color:var(--purple);">${bCom.toFixed(0)}$</div><div style="font-size:9px;color:var(--text3);">عمولة</div></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('app-content').innerHTML = `
+    ${branchFilterHtml()}
+    <div class="overview-grid">
+      <div class="ov-card red">
+        <div class="val">${totalSales.toFixed(2)}$</div>
+        <div class="lbl">إجمالي المبيعات</div>
+        <div class="sub">${invs.length} فاتورة</div>
+      </div>
+      <div class="ov-card warn">
+        <div class="val">${pending.toFixed(2)}$</div>
+        <div class="lbl">غير مُرحَّل</div>
+        <div class="sub">بحوزة الفروع</div>
+      </div>
+      <div class="ov-card ok">
+        <div class="val">${totalTransf.toFixed(2)}$</div>
+        <div class="lbl">مُرحَّل للإدارة</div>
+        <div class="sub">${trans.length} عملية</div>
+      </div>
+      <div class="ov-card purple">
+        <div class="val">${totalComm.toFixed(2)}$</div>
+        <div class="lbl">عمولات مستحقة</div>
+        <div class="sub">غير مدفوعة</div>
+      </div>
+    </div>
+
+    ${branches.length ? `
+    <div class="sec-head"><div class="sec-title">📊 ملخص الفروع</div></div>
+    <div style="background:var(--surface2);border-radius:10px;padding:4px 14px 4px;margin-bottom:14px;font-size:10px;font-weight:700;color:var(--text3);display:grid;grid-template-columns:1fr 80px 80px 80px;gap:8px;">
+      <span>الفرع</span><span style="text-align:center;">المبيعات</span><span style="text-align:center;">غير مرحّل</span><span style="text-align:center;">عمولة</span>
+    </div>
+    ${branchRows || '<div class="empty-state"><div class="ico">📭</div><p>لا توجد بيانات بعد</p></div>'}
+    ` : ''}
+
+    <div class="sec-head" style="margin-top:8px;">
+      <div class="sec-title">🧾 آخر الفواتير</div>
+      <button class="btn btn-ghost btn-sm" onclick="switchTab('invoices')">كل الفواتير</button>
+    </div>
+    ${invs.slice(0,5).map(inv => invoiceCardHtml(inv)).join('') || '<div class="empty-state"><div class="ico">📭</div><p>لا توجد فواتير</p></div>'}
+  `;
+}
+
+// ══════════════════════════════════════════
+// INVOICES TAB
+// ══════════════════════════════════════════
+function renderInvoices() {
+  document.getElementById('app-content').innerHTML = `
+    ${branchFilterHtml()}
+    <div class="filter-row">
+      <input class="filter-input" type="search" id="inv-search" placeholder="بحث باسم الزبون أو رقم الفاتورة..." oninput="renderInvList()">
+    </div>
+    <div class="sec-head">
+      <div class="sec-title" id="inv-count-lbl">الفواتير</div>
+    </div>
+    <div id="inv-list"></div>
+  `;
+  renderInvList();
+}
+
+function renderInvList() {
+  const q    = (document.getElementById('inv-search')?.value||'').toLowerCase();
+  let list   = filteredInvoices().filter(i =>
+    !q || (i.inv_number+'').includes(q) ||
+    (i.customer_name||'').toLowerCase().includes(q) ||
+    (i.customer_phone||'').toLowerCase().includes(q)
+  );
+  document.getElementById('inv-count-lbl').textContent = `${list.length} فاتورة`;
+  const container = document.getElementById('inv-list');
+  if (!list.length) { container.innerHTML = '<div class="empty-state"><div class="ico">📭</div><p>لا توجد فواتير</p></div>'; return; }
+  container.innerHTML = list.map(inv => invoiceCardHtml(inv)).join('');
+}
+
+function invoiceCardHtml(inv) {
+  const d = new Date(inv.created_at);
+  const dateStr = d.toLocaleDateString('ar-SY',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const timeStr = d.toLocaleTimeString('ar-SY',{hour:'2-digit',minute:'2-digit'});
+  const comm = allComm.find(c => c.invoice_id === inv.id);
+  const b = branches.find(x=>x.key_name===inv.branch_key);
+
+  return `<div class="inv-card" onclick="openInvoiceDetail('${inv.id}')">
+    <div class="inv-card-head">
+      <div>
+        <div class="inv-num">#${inv.inv_number}</div>
+        <div class="inv-meta-row">${dateStr} · ${timeStr}</div>
+        ${inv.customer_name ? `<div class="inv-customer">👤 ${escH(inv.customer_name)}${inv.customer_phone?` · ${escH(inv.customer_phone)}`:''}` : ''}
+      </div>
+      <div class="inv-total">${Number(inv.total).toFixed(2)}$</div>
+    </div>
+    <div class="inv-foot">
+      <span class="badge badge-branch">${b?.icon||'🏪'} ${escH(inv.branch_name||inv.branch_key)}</span>
+      <span class="badge" style="background:var(--surface2);color:var(--text2);">${inv.items_count} قطعة</span>
+      ${comm
+        ? `<span class="badge badge-comm">⭐ عمولة: ${Number(comm.amount).toFixed(2)}$ ${comm.paid?'✓':''}</span>`
+        : `<span class="badge badge-no-comm">بدون عمولة</span>`}
+    </div>
+  </div>`;
+}
+
+async function openInvoiceDetail(invId) {
+  const inv = allInvoices.find(i=>i.id===invId);
+  if (!inv) return;
+  const comm = allComm.find(c=>c.invoice_id===invId);
+  const d = new Date(inv.created_at);
+  const dateStr = d.toLocaleDateString('ar-SY',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  // Load items
+  let itemsHtml = '<div style="color:var(--text3);text-align:center;padding:10px;">جارٍ التحميل...</div>';
+  document.getElementById('modal-title').textContent = `فاتورة #${inv.inv_number}`;
+  document.getElementById('modal-body').innerHTML = itemsHtml;
+  document.getElementById('modal').style.display = 'flex';
+
+  try {
+    const items = await sb('GET', `/rest/v1/invoice_items?invoice_id=eq.${inv.id}&select=*`);
+    itemsHtml = (Array.isArray(items)?items:[]).map(item => `
+      <div class="item-row">
+        <div class="item-name">${escH(item.product_name||'—')}</div>
+        <div class="item-qty">× ${item.qty}</div>
+        <div class="item-price">${Number(item.actual_price||item.unit_price||0).toFixed(2)}$</div>
+      </div>`).join('');
+  } catch(_) { itemsHtml = '<div style="color:var(--danger);">خطأ في تحميل البنود</div>'; }
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <div style="background:var(--surface2);border-radius:10px;padding:10px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);">التاريخ</div>
+        <div style="font-size:13px;font-weight:700;">${dateStr}</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:10px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);">الفرع</div>
+        <div style="font-size:13px;font-weight:700;">${escH(inv.branch_name||inv.branch_key)}</div>
+      </div>
+      ${inv.customer_name?`<div style="background:var(--surface2);border-radius:10px;padding:10px;grid-column:span 2;">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);">الزبون</div>
+        <div style="font-size:13px;font-weight:700;">👤 ${escH(inv.customer_name)}${inv.customer_phone?` · <span dir="ltr">${escH(inv.customer_phone)}</span>`:''}</div>
+      </div>`:''}
+    </div>
+
+    <div style="background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:14px;">
+      ${itemsHtml}
+    </div>
+
+    <div style="background:var(--red-light);border:1.5px solid var(--red-mid);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-size:13px;font-weight:700;">الإجمالي</span>
+      <span style="font-size:20px;font-weight:900;color:var(--red);">${Number(inv.total).toFixed(2)}$</span>
+    </div>
+
+    <!-- قسم العمولة -->
+    ${comm ? `
+    <div class="comm-form">
+      <div class="comm-form-title">⭐ العمولة المسجلة</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:16px;font-weight:900;color:var(--purple);">${Number(comm.amount).toFixed(2)}$</div>
+          ${comm.note?`<div style="font-size:11px;color:var(--text3);">${escH(comm.note)}</div>`:''}
+          <div style="font-size:11px;margin-top:4px;">${comm.paid?'<span style="color:var(--success);font-weight:800;">✅ مدفوعة</span>':'<span style="color:var(--warning);font-weight:800;">⏳ غير مدفوعة</span>'}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          ${!comm.paid?`<button class="btn btn-success btn-sm" onclick="markCommPaid('${comm.id}')">تسجيل الدفع</button>`:''}
+          <button class="btn btn-ghost btn-sm" onclick="deleteComm('${comm.id}','${inv.id}')">حذف</button>
+        </div>
+      </div>
+    </div>` : `
+    <div class="comm-form">
+      <div class="comm-form-title">⭐ إضافة عمولة لهذه الفاتورة</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <input type="number" class="comm-input" id="comm-amount-${inv.id}" placeholder="المبلغ $" min="0" step="0.01" style="flex:1;">
+        <input type="text" class="comm-input" id="comm-note-${inv.id}" placeholder="ملاحظة..." style="flex:2;">
+      </div>
+      <button class="btn btn-purple" style="width:100%;justify-content:center;" onclick="saveCommission('${inv.id}','${inv.branch_key}')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        حفظ العمولة
+      </button>
+    </div>`}
+  `;
+}
+
+// ══════════════════════════════════════════
+// COMMISSIONS
+// ══════════════════════════════════════════
+async function saveCommission(invId, branchKey) {
+  const amountEl = document.getElementById(`comm-amount-${invId}`);
+  const noteEl   = document.getElementById(`comm-note-${invId}`);
+  const amount   = parseFloat(amountEl?.value);
+  if (isNaN(amount) || amount <= 0) { showToast('أدخل مبلغ العمولة', 'err'); return; }
+
+  try {
+    const res = await sb('POST', '/rest/v1/invoice_commissions', {
+      invoice_id: invId,
+      branch_key: branchKey,
+      amount,
+      note: noteEl?.value.trim() || null,
+      paid: false,
+      created_by: 'admin'
+    });
+    const newComm = Array.isArray(res) ? res[0] : res;
+    if (newComm) allComm.push(newComm);
+    showToast('✅ تم حفظ العمولة', 'ok');
+    closeModal();
+    renderInvoices();
+  } catch(e) { showToast('خطأ: ' + e.message, 'err'); }
+}
+
+async function markCommPaid(commId) {
+  try {
+    await sb('PATCH', `/rest/v1/invoice_commissions?id=eq.${commId}`, { paid:true, paid_at:new Date().toISOString() }, {Prefer:'return=minimal'});
+    const c = allComm.find(x=>x.id===commId);
+    if (c) { c.paid=true; c.paid_at=new Date().toISOString(); }
+    showToast('✅ سُجِّل دفع العمولة', 'ok');
+    closeModal();
+    if (activeTab==='commissions') renderCommissions();
+  } catch(e) { showToast('خطأ: ' + e.message, 'err'); }
+}
+
+async function deleteComm(commId, invId) {
+  if (!confirm('حذف العمولة؟')) return;
+  try {
+    await sb('DELETE', `/rest/v1/invoice_commissions?id=eq.${commId}`, null, {Prefer:'return=minimal'});
+    allComm = allComm.filter(c=>c.id!==commId);
+    showToast('تم الحذف', 'ok');
+    closeModal();
+    if (activeTab==='commissions') renderCommissions();
+  } catch(e) { showToast('خطأ: ' + e.message, 'err'); }
+}
+
+function renderCommissions() {
+  const list      = filteredComm();
+  const unpaid    = list.filter(c=>!c.paid);
+  const paid      = list.filter(c=> c.paid);
+  const totalUnpaid = unpaid.reduce((s,c)=>s+(Number(c.amount)||0),0);
+  const totalPaid   = paid.reduce((s,c)=>s+(Number(c.amount)||0),0);
+
+  // ملخص لكل فرع
+  const branchSummaries = branches.map(b => {
+    const bAll    = allComm.filter(c=>c.branch_key===b.key_name);
+    const bPaid   = bAll.filter(c=>c.paid).reduce((s,c)=>s+(Number(c.amount)||0),0);
+    const bUnpaid = bAll.filter(c=>!c.paid).reduce((s,c)=>s+(Number(c.amount)||0),0);
+    const bTotal  = bPaid + bUnpaid;
+    if (bTotal === 0) return '';
+    return `<div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:13px;font-weight:800;">${b.icon||'🏪'} ${escH(b.display_name)}</div>
+        <div style="font-size:11px;color:var(--text3);">إجمالي: <strong style="color:var(--purple);">${bTotal.toFixed(2)}$</strong></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div style="background:var(--purple-bg);border-radius:9px;padding:8px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;color:var(--purple);">${bUnpaid.toFixed(2)}$</div>
+          <div style="font-size:10px;font-weight:700;color:var(--text3);">غير مقبوضة</div>
+        </div>
+        <div style="background:var(--success-bg);border-radius:9px;padding:8px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;color:var(--success);">${bPaid.toFixed(2)}$</div>
+          <div style="font-size:10px;font-weight:700;color:var(--text3);">مقبوضة</div>
+        </div>
+      </div>
+      ${bUnpaid > 0 ? `
+      <button class="btn btn-purple" style="width:100%;justify-content:center;"
+        onclick="openCommTransferModal('${b.key_name}','${escH(b.display_name)}',${bUnpaid})">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        ترحيل عمولة لـ ${escH(b.display_name)}
+      </button>` : `
+      <div style="text-align:center;font-size:12px;font-weight:700;color:var(--success);">✅ لا يوجد عمولات مستحقة</div>`}
+    </div>`;
+  }).join('');
+
+  document.getElementById('app-content').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div class="ov-card purple">
+        <div class="val">${totalUnpaid.toFixed(2)}$</div>
+        <div class="lbl">غير مقبوضة</div>
+        <div class="sub">${unpaid.length} فاتورة</div>
+      </div>
+      <div class="ov-card ok">
+        <div class="val">${totalPaid.toFixed(2)}$</div>
+        <div class="lbl">مقبوضة</div>
+        <div class="sub">${paid.length} فاتورة</div>
+      </div>
+    </div>
+
+    <div class="sec-head">
+      <div class="sec-title">⭐ ترحيل العمولات للفروع</div>
+    </div>
+    ${branchSummaries || '<div class="empty-state"><div class="ico">⭐</div><p>لا توجد عمولات بعد<br>أضفها من صفحة الفواتير</p></div>'}
+
+    ${paid.length ? `
+    <div class="sec-head" style="margin-top:16px;">
+      <div class="sec-title">✅ سجل العمولات المرحّلة</div>
+    </div>
+    ${paid.slice(0,10).map(c => commCardHtml(c)).join('')}
+    ` : ''}
+  `;
+}
+
+function openCommTransferModal(branchKey, branchName, maxAmount) {
+  document.getElementById('modal-title').textContent = `⭐ ترحيل عمولة — ${branchName}`;
+  document.getElementById('modal-body').innerHTML = `
+    <div style="background:var(--purple-bg);border:1.5px solid var(--purple);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">العمولة المستحقة لـ ${escH(branchName)}</div>
+      <div style="font-size:24px;font-weight:900;color:var(--purple);">${maxAmount.toFixed(2)}$</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">المبلغ المُرحَّل $</label>
+      <input type="number" class="form-input" id="ct-amount"
+        placeholder="0.00" min="0.01" max="${maxAmount}" step="0.01"
+        oninput="updateCommRemaining(${maxAmount})">
+    </div>
+    <div id="comm-remaining-preview" style="display:none;background:var(--surface2);border-radius:10px;padding:10px 14px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;">
+        <span style="color:var(--text3);font-weight:600;">المُرحَّل</span>
+        <span style="font-weight:800;color:var(--success);" id="cr-sent">0.00$</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:5px;">
+        <span style="color:var(--text3);font-weight:600;">المتبقي</span>
+        <span style="font-weight:800;color:var(--purple);" id="cr-remain">0.00$</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">ملاحظة</label>
+      <input type="text" class="form-input" id="ct-note" placeholder="اختياري...">
+    </div>
+
+    <button class="btn btn-purple" style="width:100%;justify-content:center;padding:13px;"
+      onclick="saveCommTransfer('${branchKey}',${maxAmount})">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      تأكيد الترحيل
+    </button>
+  `;
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function updateCommRemaining(max) {
+  const val = parseFloat(document.getElementById('ct-amount').value) || 0;
+  const preview = document.getElementById('comm-remaining-preview');
+  if (val > 0) {
+    preview.style.display = 'block';
+    document.getElementById('cr-sent').textContent   = val.toFixed(2) + '$';
+    document.getElementById('cr-remain').textContent = Math.max(0, max-val).toFixed(2) + '$';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+async function saveCommTransfer(branchKey, maxAmount) {
+  const amount = parseFloat(document.getElementById('ct-amount').value);
+  const note   = document.getElementById('ct-note').value.trim();
+
+  if (isNaN(amount) || amount <= 0) { showToast('أدخل مبلغ صحيح', 'err'); return; }
+  if (amount > maxAmount + 0.01)    { showToast(`المبلغ أكبر من المستحق (${maxAmount.toFixed(2)}$)`, 'err'); return; }
+
+  // نحدّد الفواتير غير المدفوعة لهذا الفرع ونعلّمها مدفوعة بقدر المبلغ
+  const unpaidComms = allComm
+    .filter(c => c.branch_key === branchKey && !c.paid)
+    .sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+
+  let remaining = amount;
+  const toMark  = [];
+  for (const c of unpaidComms) {
+    if (remaining <= 0) break;
+    toMark.push(c.id);
+    remaining -= Number(c.amount);
+  }
+
+  try {
+    // علّم الفواتير كمدفوعة واحدة واحدة
+    for (const id of toMark) {
+      await sb('PATCH', `/rest/v1/invoice_commissions?id=eq.${id}`,
+        { paid: true, paid_at: new Date().toISOString() },
+        { Prefer:'return=minimal' }
+      );
+      const c = allComm.find(x=>x.id===id);
+      if (c) { c.paid=true; c.paid_at=new Date().toISOString(); }
+    }
+
+    showToast(`✅ تم ترحيل ${amount.toFixed(2)}$ للفرع`, 'ok');
+    closeModal();
+    renderCommissions();
+  } catch(e) { showToast('خطأ: ' + e.message, 'err'); }
+}
+
+function commCardHtml(c) {
+  const inv = allInvoices.find(i=>i.id===c.invoice_id);
+  const b   = branches.find(x=>x.key_name===c.branch_key);
+  return `<div class="transfer-card">
+    <div class="transfer-head">
+      <div>
+        <div style="font-size:14px;font-weight:900;color:var(--purple);">${Number(c.amount).toFixed(2)}$</div>
+        ${inv?`<div style="font-size:11px;color:var(--text3);">فاتورة #${inv.inv_number}</div>`:''}
+        ${c.note?`<div style="font-size:12px;font-weight:600;margin-top:2px;">${escH(c.note)}</div>`:''}
+      </div>
+      <div style="text-align:left;">
+        <span class="badge badge-branch">${b?.icon||'🏪'} ${escH(b?.display_name||c.branch_key)}</span>
+        <div style="margin-top:5px;">${c.paid
+          ?`<span style="font-size:10px;font-weight:800;color:var(--success);">✅ مدفوعة</span>`
+          :`<button class="btn btn-success btn-sm" onclick="markCommPaid('${c.id}')">تسجيل الدفع</button>`}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// TRANSFERS TAB
+// ══════════════════════════════════════════
+function renderTransfers() {
+  const list = filteredTransfers();
+  const total = list.reduce((s,t)=>s+(Number(t.amount)||0),0);
+
+  document.getElementById('app-content').innerHTML = `
+    ${branchFilterHtml()}
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">💸 الترحيلات للإدارة</div>
+        <div class="sec-sub">إجمالي: ${total.toFixed(2)}$</div>
+      </div>
+      <button class="btn btn-red" onclick="openNewTransferModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        تسجيل ترحيل
+      </button>
+    </div>
+    <div id="transfers-list">
+      ${list.length
+        ? list.map(t => transferCardHtml(t)).join('')
+        : '<div class="empty-state"><div class="ico">💸</div><p>لا توجد ترحيلات بعد</p></div>'}
+    </div>
+  `;
+}
+
+function transferCardHtml(t) {
+  const b = branches.find(x=>x.key_name===t.branch_key);
+  const d = new Date(t.created_at);
+  const dateStr = d.toLocaleDateString('ar-SY',{day:'2-digit',month:'2-digit',year:'numeric'});
+  return `<div class="transfer-card">
+    <div class="transfer-head">
+      <div>
+        <div class="transfer-amount">${Number(t.amount).toFixed(2)}$</div>
+        <div class="transfer-branch">${b?.icon||'🏪'} ${escH(b?.display_name||t.branch_key)}</div>
+        ${t.note?`<div style="font-size:12px;color:var(--text2);margin-top:2px;">${escH(t.note)}</div>`:''}
+      </div>
+      <div style="text-align:left;">
+        <div class="transfer-date">${dateStr}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px;">بواسطة: ${escH(t.confirmed_by||'admin')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openNewTransferModal() {
+  document.getElementById('modal-title').textContent = '💸 تسجيل ترحيل جديد';
+  document.getElementById('modal-body').innerHTML = `
+    <div style="background:var(--warning-bg);border:1px solid var(--warning);border-radius:10px;padding:10px 12px;margin-bottom:16px;font-size:12px;font-weight:700;color:var(--warning);">
+      ⚠ هذا الإجراء يُسجَّل من الإدارة فقط ويُحدِّث رصيد الفرع
+    </div>
+    <div class="form-group">
+      <label class="form-label">الفرع</label>
+      <select class="form-select" id="tr-branch">
+        <option value="">— اختر فرع —</option>
+        ${branches.map(b=>`<option value="${b.key_name}">${b.icon||'🏪'} ${escH(b.display_name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">المبلغ المُرحَّل $</label>
+      <input type="number" class="form-input" id="tr-amount" placeholder="0.00" min="0.01" step="0.01">
+    </div>
+    <div class="form-group">
+      <label class="form-label">ملاحظة</label>
+      <input type="text" class="form-input" id="tr-note" placeholder="اختياري...">
+    </div>
+    <button class="btn btn-red" style="width:100%;justify-content:center;padding:13px;" onclick="saveTransfer()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      تأكيد الترحيل
+    </button>
+  `;
+  document.getElementById('modal').style.display = 'flex';
+}
+
+async function saveTransfer() {
+  const branchKey = document.getElementById('tr-branch').value;
+  const amount    = parseFloat(document.getElementById('tr-amount').value);
+  const note      = document.getElementById('tr-note').value.trim();
+
+  if (!branchKey) { showToast('اختر الفرع', 'err'); return; }
+  if (isNaN(amount) || amount <= 0) { showToast('أدخل مبلغ صحيح', 'err'); return; }
+
+  const b = branches.find(x=>x.key_name===branchKey);
+
+  // Confirm with pending balance check
+  const bInvs  = allInvoices.filter(i=>i.branch_key===branchKey);
+  const bTrans = allTransfers.filter(t=>t.branch_key===branchKey);
+  const bSales = bInvs.reduce((s,i)=>s+(Number(i.total)||0),0);
+  const bTr    = bTrans.reduce((s,t)=>s+(Number(t.amount)||0),0);
+  const pending = Math.max(0, bSales - bTr);
+
+  if (amount > pending + 0.01) {
+    if (!confirm(`المبلغ المدخل (${amount}$) أكبر من الرصيد غير المرحّل (${pending.toFixed(2)}$).\nهل تريد المتابعة؟`)) return;
+  }
+
+  try {
+    const res = await sb('POST', '/rest/v1/branch_transfers', {
+      branch_key  : branchKey,
+      amount,
+      note        : note || null,
+      transfer_date: new Date().toISOString().slice(0,10),
+      confirmed_by: 'admin',
+    });
+    const newT = Array.isArray(res) ? res[0] : res;
+    if (newT) allTransfers.push(newT);
+    showToast(`✅ تم تسجيل ترحيل ${amount}$ من ${b?.display_name||branchKey}`, 'ok');
+    closeModal();
+    renderTransfers();
+  } catch(e) { showToast('خطأ: ' + e.message, 'err'); }
+}
+
+// ══════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function showToast(msg,type=''){
+  const t=document.createElement('div');t.className='toast '+(type==='ok'?'ok':type==='err'?'err':'');t.textContent=msg;
+  document.getElementById('toast-wrap').appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity 0.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000);
+}
+
+// ══════════════════════════════════════════
+// START — check session
+// ══════════════════════════════════════════
+if (sessionStorage.getItem('gmt_admin_auth') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  bootApp();
+}
+document.getElementById('pwd-input').focus();
+</script>
+</body>
+</html>
